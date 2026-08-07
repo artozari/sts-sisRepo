@@ -1,0 +1,21 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ComBaudrateEnum = void 0;
+var ComBaudrateEnum;
+(function (ComBaudrateEnum) {
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate200"] = 200] = "Baudrate200";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate300"] = 300] = "Baudrate300";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate600"] = 600] = "Baudrate600";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate1200"] = 1200] = "Baudrate1200";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate2400"] = 2400] = "Baudrate2400";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate4800"] = 4800] = "Baudrate4800";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate9600"] = 9600] = "Baudrate9600";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate19200"] = 19200] = "Baudrate19200";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate38400"] = 38400] = "Baudrate38400";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate57600"] = 57600] = "Baudrate57600";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate115200"] = 115200] = "Baudrate115200";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate230400"] = 230400] = "Baudrate230400";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate460800"] = 460800] = "Baudrate460800";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate576000"] = 576000] = "Baudrate576000";
+    ComBaudrateEnum[ComBaudrateEnum["Baudrate921600"] = 921600] = "Baudrate921600";
+})(ComBaudrateEnum || (exports.ComBaudrateEnum = ComBaudrateEnum = {}));

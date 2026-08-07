@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+model User_table {
+    id           Int            @id @default(autoincrement())
+    email        String         @unique
+    password     String
+    enabled      Boolean        @default(true)
+    activated    DateTime?
+    // role    Role     @default(USER)
+    profile      Profile_table?
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    games        Game_table[]
+    Config_table Config_table[]
+}
+
+model Profile_table {
+    id        Int        @id @default(autoincrement())
+    name      String
+    lastName  String
+    phone     String?
+    user      User_table @relation(fields: [userId], references: [id])
+    userId    Int        @unique
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+}
+
+model Game_table {
+    id         Int         @id @default(autoincrement())
+    createdAt  DateTime    @default(now())
+    updatedAt  DateTime    @updatedAt
+    gameNumber Int
+    winNumber  Int
+    rpm        Int
+    openTable  Boolean     @default(true)
+    clockwise  Boolean
+    enabled    Boolean     @default(true)
+    croupier   User_table? @relation(fields: [croupierId], references: [id])
+    croupierId Int?
+    table      Table_table @relation(fields: [tableId], references: [id])
+    tableId    Int
+}
+
+model Config_table {
+    id                 Int         @id @default(autoincrement())
+    createdAt          DateTime    @default(now())
+    updatedAt          DateTime    @updatedAt
+    enabled            Boolean     @default(true)
+    description        String?
+    wheelType          String      @default("FR37")
+    skin               String      @default("BOX")
+    skin2              String      @default("BALL")
+    skin3              String      @default("LIGHT_NEON_PINK")
+    skin4              String      @default("CHINESE_96")
+    skin5              String      @default("RACING")
+    skin6              String      @default("OFF")
+    skin7              String      @default("OFF")
+    skin8              String      @default("OFF")
+    lang               String      @default("es")
+    lang2              String      @default("OFF")
+    lang3              String      @default("OFF")
+    croupierLang       String      @default("es")
+    croupierLang2      String      @default("OFF")
+    croupierLang3      String      @default("OFF")
+    skinRotationTime   Int         @default(60)
+    statisticsQ        Int         @default(200)
+    colorOfLights      String      @default("yellow")
+    lightsIntensity    Int         @default(1)
+    semaphoreIntensity Int         @default(1)
+    semaphoreTime      Int         @default(15)
+    semaphoreGreen     Int         @default(4)
+    semaphoreYellow    Int         @default(2)
+    max                Int
+    min                Int
+    chip               Int
+    b36                Int
+    b18                Int
+    b12                Int
+    b9                 Int
+    b6                 Int
+    b7                 Int
+    bCha1              Int
+    bCha2              Int
+    user               User_table? @relation(fields: [userId], references: [id])
+    userId             Int?
+
+    Table_table Table_table[]
+    // table              Table_table @relation(fields: [tableId], references: [id])
+    // tableId            Int
+}
+
+model Table_table {
+    id          Int          @id @default(autoincrement())
+    key         String       @unique
+    name        String       @unique
+    shortName   String       @unique
+    enabled     Boolean      @default(true)
+    posX        Int          @default(-1)
+    posY        Int          @default(-1)
+    layout      Int          @default(0)
+    noSmoking   Boolean      @default(true)
+    tableNumber Int          @default(0)
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
+    Game_table  Game_table[]
+
+    // Config_table Config_table[]
+    Config_table  Config_table @relation(fields: [configTableId], references: [id])
+    configTableId Int
+}
+
+model Casino_table {
+    id                     Int      @id @default(autoincrement())
+    createdAt              DateTime @default(now())
+    updatedAt              DateTime @updatedAt
+    casinoCode             String
+    name                   String
+    country                String
+    province               String
+    city                   String
+    address                String
+    latitude               Float?
+    longitude              Float?
+    mqtt_url               String
+    mqtt_port              String
+    mqtt_protocol          String
+    mqtt_tls               Boolean
+    mqtt_user              String
+    mqtt_password          String
+    mqtt_refresh_time_msec Int
+}
+
+model Cutoff_table {
+    id          Int          @id @default(autoincrement())
+    time        DateTime     @unique
+    key         String
+    create_at  DateTime     @default(now())
+    enable      Boolean      @default(false)
+    tick        DateTime     @default(now())
+    liberado   String?
+    hash        String?
+    attempts   Int          @default(0)
+}
+
+
+

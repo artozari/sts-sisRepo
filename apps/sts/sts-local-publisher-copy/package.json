@@ -1,0 +1,26 @@
+{
+    "name": "sts-local-publisher-copy",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test_co": "vitest --coverage",
+        "test_ui": "vitest --ui",
+        "dev": "nodemon src/index.ts watch",
+        "build": "tsc",
+        "start": "node dist/index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/serialport": "^8.0.5",
+        "nodemon": "^3.1.4",
+        "ts-node": "^10.9.1"
+    },
+    "dependencies": {
+        "@slcn-pkg/mqtt-client-class": "^1.0.0",
+        "@slcn-pkg/mqtt-client-observable-class": "^1.0.0",
+        "sts-common": "^1.0.0"
+    }
+}

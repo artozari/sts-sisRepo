@@ -1,0 +1,54 @@
+import { CreateCasinoDto } from './dto/create-casino.dto';
+import { UpdateCasinoDto } from './dto/update-casino.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CasinoEntityInterface } from './entities/casino.entity';
+import { LocalCacheService } from 'src/local-cache/local-cache.service';
+export declare class CasinoService {
+    private readonly _prisma;
+    private readonly _cache;
+    constructor(_prisma: PrismaService, _cache: LocalCacheService);
+    create(createCasinoDto: CreateCasinoDto): import(".prisma/client").Prisma.Prisma__Casino_tableClient<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        casinoCode: string;
+        country: string;
+        province: string;
+        city: string;
+        address: string;
+        latitude: number | null;
+        longitude: number | null;
+        mqtt_url: string;
+        mqtt_port: string;
+        mqtt_protocol: string;
+        mqtt_tls: boolean;
+        mqtt_user: string;
+        mqtt_password: string;
+        mqtt_refresh_time_msec: number;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs, import(".prisma/client").Prisma.PrismaClientOptions>;
+    catch(error: any): void;
+    findAll(q: number): Promise<CasinoEntityInterface[]>;
+    findOne(id: number): Promise<CasinoEntityInterface>;
+    update(id: number, updateCasinoDto: UpdateCasinoDto): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        casinoCode: string;
+        country: string;
+        province: string;
+        city: string;
+        address: string;
+        latitude: number | null;
+        longitude: number | null;
+        mqtt_url: string;
+        mqtt_port: string;
+        mqtt_protocol: string;
+        mqtt_tls: boolean;
+        mqtt_user: string;
+        mqtt_password: string;
+        mqtt_refresh_time_msec: number;
+    }>;
+    remove(id: number): string;
+}

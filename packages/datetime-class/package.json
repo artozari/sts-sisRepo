@@ -1,0 +1,19 @@
+{
+	"name": "datetime-class",
+	"version": "0.0.1",
+	"main": "dist/index.js",
+	"scripts": {
+		"test_co": "vitest --coverage",
+		"test_ui": "vitest --ui",
+		"dev": "nodemon src/index.ts",
+		"build": "tsc"
+	},
+	"dependencies": {
+		"luxon": "^3.4.4",
+		"tslib": "^2.3.0"
+	},
+	"type": "commonjs",
+	"devDependencies": {
+		"@types/luxon": "^3.4.2"
+	}
+}

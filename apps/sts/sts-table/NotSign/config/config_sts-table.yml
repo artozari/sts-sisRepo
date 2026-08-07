@@ -1,0 +1,40 @@
+HARDWARE:
+    id: sts-hardware__18c04de5dc6d__8022__9022
+    idAsus1: sts-hardware__0a002700000f__8022__9022
+    idNoSe: sts-hardware__d85ed38ba2b9__8022__9022
+    idLnx: sts-hardware__88aedd43c7d0__8022__9022
+    idAsus: sts-hardware__88aedd43c7d0__8022__9022
+    colorOfLights: yellow
+    lightsIntensity: 1
+    semaphoreIntensity: 1
+    tableNumber: 2
+HTTP:
+    PORT: "8021"
+    PORTS: "9021"
+WHEEL:
+    idSielcon: sts-wheel__d85ed38ba2b9__192168128001__8021__9021
+    idAsus: sts-protocol__88aedd43c7d0__8021__9021
+    id1: sts-wheel__d85ed38ba2b9__8021__9021
+    id: 88:ae:dd:43:ca:3b
+SIGNBOARD:
+    type: roulette
+    id:
+        - 104a23dce06645b994ff2d5083389024
+        - Mesa
+        - Cartel
+API:
+    url1: 10.0.0.209
+    port1: "8023"
+    url: 127.0.0.1
+    port: "4000"
+    ssl: false
+CORS: []
+LOGGER:
+    datePattern: YYYY-MM-DD
+    zippedArchive: true
+    maxSize: TenMb
+    maxFiles: FiftyFiles
+    level: debug
+CONFIG_FILE:
+    general: apps/sts/NotSign/config/general.yml
+    secretKey: c1c82f6d-7f13-436e-a364-7ad37c2db094

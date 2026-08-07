@@ -1,0 +1,1 @@
+{"version":3,"file":"wheel.mqtt.tx.interface.d.ts","sourceRoot":"","sources":["../../../wheel/interfaces/wheel.mqtt.tx.interface.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,OAAO,WAAW,oBAAoB;IACzC,IAAI,EAAE,MAAM,CAAC;IACb,IAAI,EAAE,MAAM,CAAC;IACb,KAAK,EAAE,MAAM,CAAC;CACjB"}

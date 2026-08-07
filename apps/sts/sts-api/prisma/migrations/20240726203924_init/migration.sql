@@ -1,0 +1,39 @@
+-- CreateTable
+CREATE TABLE "User" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Profile" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Game" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "gameNumber" INTEGER NOT NULL,
+    "winNumber" INTEGER NOT NULL,
+    "rpm" INTEGER NOT NULL,
+    "clockWise" BOOLEAN NOT NULL,
+    "enabled" BOOLEAN NOT NULL DEFAULT true,
+    "authorId" INTEGER NOT NULL,
+    CONSTRAINT "Game_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Profile_userId_key" ON "Profile"("userId");

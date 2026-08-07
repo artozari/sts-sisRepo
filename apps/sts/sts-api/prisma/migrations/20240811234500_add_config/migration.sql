@@ -1,0 +1,22 @@
+-- CreateTable
+CREATE TABLE "Config_table" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "enabled" BOOLEAN NOT NULL DEFAULT true,
+    "max" INTEGER NOT NULL,
+    "min" INTEGER NOT NULL,
+    "chip" INTEGER NOT NULL,
+    "b36" INTEGER NOT NULL,
+    "b18" INTEGER NOT NULL,
+    "b12" INTEGER NOT NULL,
+    "b9" INTEGER NOT NULL,
+    "b6" INTEGER NOT NULL,
+    "b7" INTEGER NOT NULL,
+    "bCha1" INTEGER NOT NULL,
+    "bCha2" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "tableId" INTEGER NOT NULL,
+    CONSTRAINT "Config_table_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User_table" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Config_table_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "Table_table" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);

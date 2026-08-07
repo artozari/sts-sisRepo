@@ -1,0 +1,8 @@
+export enum ColorOfLightsEnum {
+  yellow = "yellow",
+  green = "green",
+  blue = "blue",
+  white = "white",
+  cyan = "cyan",
+  violet = "violet",
+}

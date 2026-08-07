@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.HttpVerbsEnum = void 0;
+var HttpVerbsEnum;
+(function (HttpVerbsEnum) {
+    HttpVerbsEnum["GET"] = "GET";
+    HttpVerbsEnum["POST"] = "POST";
+    HttpVerbsEnum["PUT"] = "PUT";
+    HttpVerbsEnum["PATCH"] = "PATCH";
+    HttpVerbsEnum["DELETE"] = "DELETE";
+    HttpVerbsEnum["OPTIONS"] = "OPTIONS";
+})(HttpVerbsEnum || (exports.HttpVerbsEnum = HttpVerbsEnum = {}));

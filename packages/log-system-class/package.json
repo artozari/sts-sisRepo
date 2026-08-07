@@ -1,0 +1,19 @@
+{
+	"name": "log-system-class",
+	"version": "0.0.1",
+	"type": "commonjs",
+	"main": "dist/index.js",
+	"scripts": {
+		"test_co": "vitest --coverage",
+		"test_ui": "vitest --ui",
+		"dev": "nodemon src/index.ts",
+		"build": "tsc"
+	},
+	"dependencies": {
+		"config-class": "^0.0.1",
+		"datetime-class": "^0.0.1"
+	},
+	"devDependencies": {
+		"dotenv": "^16.4.5"
+	}
+}

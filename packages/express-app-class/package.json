@@ -1,0 +1,30 @@
+{
+  "name": "express-app-class",
+  "version": "0.0.1",
+  "dependencies": {
+    "config-class": "^0.0.1",
+    "cors": "^2.8.5",
+    "datetime-class": "^0.0.1",
+    "http-response-class": "^0.0.1",
+    "log-system-class": "^0.0.1",
+    "morgan": "^1.10.0",
+    "node-forge": "^1.3.1",
+    "rotating-file-stream": "^3.2.3",
+    "router-interface": "^0.0.1",
+    "tslib": "^2.3.0",
+    "utility-libraries": "^1.0.0"
+  },
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "scripts": {
+    "test_co": "vitest --coverage",
+    "test_ui": "vitest --ui",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/morgan": "^1.9.9",
+    "@types/node-forge": "^1.3.11"
+  }
+}

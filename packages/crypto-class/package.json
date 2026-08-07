@@ -1,0 +1,17 @@
+{
+  "name": "crypto-class",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test_co": "vitest --coverage",
+    "test_ui": "vitest --ui",
+    "dev": "nodemon ./src/index.ts",
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
+    "start": "node ./src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

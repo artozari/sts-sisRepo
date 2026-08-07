@@ -1,0 +1,21 @@
+{
+  "name": "sts-dashboard",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test_co": "vitest --coverage",
+    "test_ui": "vitest --ui",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@slcn-pkg/express-app-class": "^1.0.0",
+    "@slcn-pkg/mqtt-client-class": "^1.0.0",
+    "@slcn-pkg/mqtt-client-observable-class": "^1.0.0"
+  }
+}

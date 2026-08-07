@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": false,
+        "amount": 50
+    },
+    "auditLog": "C:\\Users\\Artozaria\\Documents\\Proyectos\\sts-Sis\\apps\\sts\\sts-table\\NotSign\\logs\\audit\\audit.log",
+    "files": [
+        {
+            "date": 1781121617906,
+            "name": "C:\\Users\\Artozaria\\Documents\\Proyectos\\sts-Sis\\apps\\sts\\sts-table\\NotSign\\logs\\sts-table-2026-06-10.log",
+            "hash": "0586008c61b6bcfbc23a7166162abeff42ac7517b0296128ee25439af0ff6099"
+        },
+        {
+            "date": 1781187390013,
+            "name": "C:\\Users\\Artozaria\\Documents\\Proyectos\\sts-Sis\\apps\\sts\\sts-table\\NotSign\\logs\\sts-table-2026-06-11.log",
+            "hash": "21ddce79a7d8fc5d3bdb30a173dbeadebf5c93267621129f057ddf058b8824ef"
+        }
+    ],
+    "hashType": "sha256"
+}

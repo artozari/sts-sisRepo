@@ -1,0 +1,15 @@
+{
+  "name": "http-client-class",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "test_co": "vitest --coverage",
+    "test_ui": "vitest --ui",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

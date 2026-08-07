@@ -1,0 +1,24 @@
+{
+	"name": "mqtt-client-class",
+	"version": "0.0.1",
+	"type": "commonjs",
+	"main": "dist/index.js",
+	"scripts": {
+		"test_co": "vitest --coverage",
+		"test_ui": "vitest --ui",
+		"dev": "nodemon src/index.ts",
+		"build": "tsc"
+	},
+	"devDependencies": {
+		"@types/node": "^20.3.2",
+		"@types/pidusage": "^2.0.2"
+	},
+	"dependencies": {
+		"datetime-class": "^0.0.1",
+		"log-system-class": "^0.0.1",
+		"mqtt": "^4.3.7",
+		"mqtt-client-observable-class": "^0.0.1",
+		"pidusage": "^3.0.2",
+		"tslib": "^2.3.0"
+	}
+}

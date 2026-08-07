@@ -1,0 +1,98 @@
+import { CreateTableDto } from './dto/create-table.dto';
+import { UpdateTableDto } from './dto/update-table.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { EnableTableDto } from './dto/enable-table.dto';
+export declare class TableService {
+    private readonly _prisma;
+    constructor(_prisma: PrismaService);
+    create(createTableDto: CreateTableDto): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        enabled: boolean;
+        name: string;
+        key: string;
+        shortName: string;
+        noSmoking: boolean;
+        tableNumber: number;
+        posX: number;
+        posY: number;
+        layout: number;
+        configTableId: number;
+    }>;
+    findAll(): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        enabled: boolean;
+        name: string;
+        key: string;
+        shortName: string;
+        noSmoking: boolean;
+        tableNumber: number;
+        posX: number;
+        posY: number;
+        layout: number;
+        configTableId: number;
+    }[]>;
+    findOne(id: number): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        enabled: boolean;
+        name: string;
+        key: string;
+        shortName: string;
+        noSmoking: boolean;
+        tableNumber: number;
+        posX: number;
+        posY: number;
+        layout: number;
+        configTableId: number;
+    }>;
+    findOneByKey(key: string): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        enabled: boolean;
+        name: string;
+        key: string;
+        shortName: string;
+        noSmoking: boolean;
+        tableNumber: number;
+        posX: number;
+        posY: number;
+        layout: number;
+        configTableId: number;
+    }>;
+    update: (id: number, updateTableDto: UpdateTableDto) => Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        enabled: boolean;
+        name: string;
+        key: string;
+        shortName: string;
+        noSmoking: boolean;
+        tableNumber: number;
+        posX: number;
+        posY: number;
+        layout: number;
+        configTableId: number;
+    }>;
+    enabled: (id: number, enableTableDto: EnableTableDto) => Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        enabled: boolean;
+        name: string;
+        key: string;
+        shortName: string;
+        noSmoking: boolean;
+        tableNumber: number;
+        posX: number;
+        posY: number;
+        layout: number;
+        configTableId: number;
+    }>;
+}

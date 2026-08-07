@@ -1,0 +1,24 @@
+MAC_ID:
+    #  mac: 88:ae:dd:43:ca:37
+    mac: d8:bb:c1:1e:0b:2a
+    mac1: 18:c0:4d:e5:dc:6d
+    macAsus: 0a:00:27:00:00:0f
+    mac217: 00:15:5d:25:be:bd
+    macNucI3: d8:5e:d3:8b:a2:b9
+    macAngel: 00:E8:00:32:01:22
+MQTT:
+    url: 127.0.0.1
+    urlHost: dev01.sielcon.net
+    urlLnx: 10.0.0.209
+    port: "8883"
+    protocol: ws
+    username: 7cca027494f5b1a76dfedc30d424d305|b0ea1ebd6331
+    password: 6c56b03825eb844f89d41785301abb70|e14748946ea09ff4
+ADMIN:
+    username: 81d24e9b0e7f05efeb0fac37c658b5e2|1deaacfd5f05fad0afb1577565477dae878599fb10bd47
+    password: 5181bdafb3b68528abe505331827cf31|1bcb91322b5d05190b
+USER:
+    username: 9d1e8e494d50b615d1afbe2589650136|a94902266f0c51263b11e0117216e4b13a78c1
+    password: bdf4241f4955fc6413750e9b666a045d|73c6af790502d6b147
+CONFIG_FILE:
+    secretKey: 2801012c-1c19-4409-9761-75410e8b1a03

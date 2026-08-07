@@ -1,0 +1,27 @@
+{
+  "name": "crc-class",
+  "version": "1.0.0",
+  "description": "Class to implement CRC.",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test_co": "vitest --coverage",
+    "test_ui": "vitest --ui",
+    "dev": "nodemon ./src/index.ts",
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
+    "start": "node ./src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "js-yaml": "^4.1.0",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "@types/js-yaml": "^4.0.9",
+    "@types/multer": "^1.4.11"
+  }
+}

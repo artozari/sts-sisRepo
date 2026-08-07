@@ -1,0 +1,32 @@
+{
+  "name": "sts-hardware",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test_co": "vitest --coverage",
+    "test_ui": "vitest --ui",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "Ing. Hernan Picasso",
+  "license": "ISC",
+  "description": "STS System Hardware Driver",
+  "dependencies": {
+    "@slcn-pkg/config-class": "^1.0.1",
+    "@slcn-pkg/crc-class": "^1.0.0",
+    "@slcn-pkg/express-app-class": "^1.0.0",
+    "@slcn-pkg/mqtt-client-class": "^1.0.0",
+    "@slcn-pkg/mqtt-client-observable-class": "^1.0.0",
+    "sts-common": "^1.0.0",
+    "bcd": "^1.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validators": "^1.0.1",
+    "reflect-metadata": "^0.2.2",
+    "serialport": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/serialport": "^8.0.5"
+  }
+}

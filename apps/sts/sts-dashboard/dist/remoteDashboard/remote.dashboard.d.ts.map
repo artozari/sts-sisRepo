@@ -1,0 +1,1 @@
+{"version":3,"file":"remote.dashboard.d.ts","sourceRoot":"","sources":["../../src/remoteDashboard/remote.dashboard.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAA+D,MAAM,wCAAwC,CAAC;AAE1I,qBAAa,oBAAoB;IAE7B,OAAO,CAAC,QAAQ,CAAC,UAAU;IAC3B,OAAO,CAAC,QAAQ,CAAC,WAAW;gBADX,UAAU,EAAE,mBAAmB,EAC/B,WAAW,EAAE,mBAAmB;CAkCpD"}

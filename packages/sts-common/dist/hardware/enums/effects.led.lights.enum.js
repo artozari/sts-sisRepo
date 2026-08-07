@@ -1,0 +1,25 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EffectsLedLightsEnum = void 0;
+var EffectsLedLightsEnum;
+(function (EffectsLedLightsEnum) {
+    EffectsLedLightsEnum[EffectsLedLightsEnum["Off"] = 0] = "Off";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["White"] = 1] = "White";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["Yellow"] = 2] = "Yellow";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["Violet"] = 3] = "Violet";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["Cyano"] = 4] = "Cyano";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["Red"] = 5] = "Red";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["Green"] = 6] = "Green";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["Blue"] = 7] = "Blue";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["Degrade"] = 8] = "Degrade";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["Rainbow"] = 9] = "Rainbow";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["Rotation"] = 10] = "Rotation";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["Drop"] = 11] = "Drop";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["LowWhilte"] = 12] = "LowWhilte";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["LowYellow"] = 13] = "LowYellow";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["LowViolet"] = 14] = "LowViolet";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["LowCyano"] = 15] = "LowCyano";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["LowRed"] = 16] = "LowRed";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["LowGreen"] = 17] = "LowGreen";
+    EffectsLedLightsEnum[EffectsLedLightsEnum["LowBlue"] = 18] = "LowBlue";
+})(EffectsLedLightsEnum || (exports.EffectsLedLightsEnum = EffectsLedLightsEnum = {}));

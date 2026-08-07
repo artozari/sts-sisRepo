@@ -1,0 +1,7 @@
+HTTP:
+  PORT: "4000"
+  PORTS: "8000"
+CORS: []
+CONFIG_FILE:
+  general: ../NotSign/config/general.yml
+  secretKey: 02b7c91b-9137-4452-bfa4-10375a8acdd0
