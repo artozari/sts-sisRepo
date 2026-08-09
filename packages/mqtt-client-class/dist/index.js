@@ -52,6 +52,10 @@ class MqttClientClass {
         this._aliveTopic = "";
         this._protocol = "wss";
         this._client = undefined;
+        this._pidUsageInterval = undefined;
+        this._aliveInterval = undefined;
+        this._connectionMonitorInterval = undefined;
+        this._aliveSubscribed = false;
         this.mqttClientAlive = undefined;
         this._strID = "";
         /**
@@ -181,6 +185,18 @@ class MqttClientClass {
         };
         this.close = () => {
             try {
+                if (this._aliveInterval !== undefined) {
+                    clearInterval(this._aliveInterval);
+                    this._aliveInterval = undefined;
+                }
+                if (this._pidUsageInterval !== undefined) {
+                    clearInterval(this._pidUsageInterval);
+                    this._pidUsageInterval = undefined;
+                }
+                if (this._connectionMonitorInterval !== undefined) {
+                    clearInterval(this._connectionMonitorInterval);
+                    this._connectionMonitorInterval = undefined;
+                }
                 if (this._client !== undefined) {
                     this._client.end();
                     this._client = undefined;
@@ -262,8 +278,8 @@ class MqttClientClass {
             const fullUrl = `${this._protocol}://${this._mqttClientConfig.urlMqtt}:${this._mqttClientConfig.portMqtt}`;
             this._client = mqtt.connect(fullUrl, options);
             this.pidUsage();
-            setInterval(this.pidUsage, 1000);
-            setInterval(() => {
+            this._pidUsageInterval = setInterval(this.pidUsage, 1000);
+            this._connectionMonitorInterval = setInterval(() => {
                 const connect = this.isConected(false) ? "connected" : "disconnected";
                 this.publishEvents(connect);
             }, 100);
@@ -289,16 +305,21 @@ class MqttClientClass {
                     if (this._LOGS)
                         this._LOGS.publishWarn(name, msg, metadata);
                     if (this._client !== undefined) {
-                        setInterval(() => {
-                            this.publishAlive();
-                        }, 5000);
-                        this._client.subscribe(this._aliveTopic, (err) => {
-                            if (!err) {
-                                setTimeout(() => {
-                                    this.publishAlive();
-                                }, 500);
-                            }
-                        });
+                        if (this._aliveInterval === undefined) {
+                            this._aliveInterval = setInterval(() => {
+                                this.publishAlive();
+                            }, 5000);
+                        }
+                        if (!this._aliveSubscribed) {
+                            this._client.subscribe(this._aliveTopic, (err) => {
+                                if (!err) {
+                                    this._aliveSubscribed = true;
+                                    setTimeout(() => {
+                                        this.publishAlive();
+                                    }, 500);
+                                }
+                            });
+                        }
                     }
                 });
                 // The code block processes the received MQTT messages.

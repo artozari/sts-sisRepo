@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires, no-undef
 const Service = require("node-linux").Service;
+const fs = require("fs");
+const path = require("path");
 
 // * ****************************************************
 // * MQTT Broker
@@ -159,12 +161,48 @@ const installStsTable = () => {
 // * ****************************************************
 // * STS-Local-Publisher
 // * ****************************************************
+const prepareStsPublisher = () => {
+  const appDir = path.resolve(__dirname, "..", "apps", "sts", "sts-local-publisher");
+  const distDir = path.join(appDir, "dist");
+  const envExample = path.join(appDir, ".env.example");
+  const envFile = path.join(appDir, ".env");
+
+  // 1. Asegurar que exista el archivo de configuracion (.env).
+  if (!fs.existsSync(envFile)) {
+    if (fs.existsSync(envExample)) {
+      fs.copyFileSync(envExample, envFile);
+      console.log("[STS-Publisher] Archivo .env creado a partir de .env.example");
+    } else {
+      console.error("[STS-Publisher] No se encontro ni .env ni .env.example. Revisa la configuracion.");
+      process.exit(1);
+    }
+  } else {
+    console.log("[STS-Publisher] El archivo .env ya existe");
+  }
+
+  // 2. Copiar el .env dentro de dist para que el servicio siempre lo encuentre.
+  fs.mkdirSync(distDir, { recursive: true });
+  fs.copyFileSync(envFile, path.join(distDir, ".env"));
+  console.log("[STS-Publisher] Archivo .env copiado a dist/.env");
+
+  // 3. Verificar que exista el build (dist/index.js); si no, construirlo.
+  if (!fs.existsSync(path.join(distDir, "index.js"))) {
+    console.log("[STS-Publisher] No se encontro dist/index.js, construyendo el proyecto...");
+    const { execSync } = require("child_process");
+    execSync("npm run build", { cwd: appDir, stdio: "inherit" });
+  }
+};
+
 const installStsPublisher = () => {
+  prepareStsPublisher();
+
+  const appDir = path.resolve(__dirname, "..", "apps", "sts", "sts-local-publisher");
+
   // Create a new service object
   const svc = new Service({
       name: "sts_publisher",
       description: "STS-Publisher.",
-      script: "./apps/sts/sts-local-publisher/dist/index.js",
+      script: path.join(appDir, "dist", "index.js"),
       env: [
           {
               name: "NODE_ENV",
@@ -172,7 +210,7 @@ const installStsPublisher = () => {
           },
           {
               name: "configFile",
-              value: "./apps/sts/sts-local-publisher/NotSign/config/config_sts-local-publisher.yml",
+              value: path.join(appDir, "dist", ".env"),
           },
       ],
   });

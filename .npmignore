@@ -1,0 +1,9 @@
+/node_modules
+/src
+tsconfig.json
+/coverage
+.gitignore
+**/NotSign/httpLog
+**/*.log
+**/.env
+**/httpLog
