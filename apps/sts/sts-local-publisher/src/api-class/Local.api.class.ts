@@ -21,6 +21,9 @@ export class ApiCheckClass {
     public start(): void {
         if (this.intervalId) return;
         this.check();
+        this.intervalId = setInterval(() => {
+            this.check();
+        }, this.cfg.interval);
         console.info(`[HealthCheck] iniciado (${this.cfg.baseUrl}${this.cfg.path})`);
     }
 
@@ -39,7 +42,7 @@ export class ApiCheckClass {
     public async queryEndpoint(endpoint: string): Promise<{ success: boolean; statusCode: number; data: string; error: string | null }> {
         try {
             const { statusCode, body } = await this.doRequestWithBody(endpoint);
-            console.log(`\x1b[1;36;48;2;29;67;113m Datos de respuesta de la API: ${body} \x1b[0m`);
+            // console.log(`\x1b[1;36;48;2;29;67;113m Datos de respuesta de la API: ${body} \x1b[0m`);
 
             return { success: statusCode >= 200 && statusCode < 300, statusCode, data: body, error: null };
         } catch (err) {

@@ -17,7 +17,7 @@ export class CasinoPublisherClass {
     requestSync = 0;
     constructor(private readonly _config: CasinoPublisherConfigInterface) {
         const subsTopic: MqttSubscribeObservableInterface = {
-            topic: `STS-MESAS/STS-Casino/GameSync/` + process.env.NUMERO_MAQUNA,
+            topic: `STS-MESAS/STS-Casino/GameSync/` + process.env.NUMERO_MAQUINA,
             qos: 0,
         };
         _config.subject.subscribe$.next(subsTopic);
@@ -63,7 +63,7 @@ export class CasinoPublisherClass {
 
     public pushGamesToCasino(payload: string) {
         try {
-            console.log("\x1b[36;47;1m " + payload.toString() + " \x1b[0m");
+            console.log("\x1b[36;47;1m Envio de pyload \x1b[0m");
         } catch (error) {
             console.error("Error pushing games to casino:", error);
         }

@@ -83,8 +83,50 @@ HEALTH_CHECK.start();
 let gamesWinning: string;
 let tableStatus;
 let tableConf: string;
+let mainInterval: NodeJS.Timeout | null = null;
+let isShuttingDown = false;
 
-setInterval(async () => {
+const cleanup = (reason?: string, error?: unknown) => {
+    if (isShuttingDown) return;
+    isShuttingDown = true;
+
+    console.log(`[Shutdown] Iniciando limpieza${reason ? ` por ${reason}` : ""}`);
+    if (error) {
+        console.error(error instanceof Error ? error.stack || error.message : error);
+    }
+
+    if (mainInterval !== null) {
+        clearInterval(mainInterval);
+        mainInterval = null;
+    }
+
+    try {
+        HEALTH_CHECK.stop();
+    } catch (err) {
+        console.error("Error deteniendo health check:", err);
+    }
+
+    try {
+        MQTT.close();
+    } catch (err) {
+        console.error("Error cerrando MQTT local:", err);
+    }
+
+    try {
+        MQTT_CASINO.close();
+    } catch (err) {
+        console.error("Error cerrando MQTT casino:", err);
+    }
+
+    process.exit(error ? 1 : 0);
+};
+
+process.on("SIGINT", () => cleanup("SIGINT"));
+process.on("SIGTERM", () => cleanup("SIGTERM"));
+process.on("uncaughtException", (err) => cleanup("uncaughtException", err));
+process.on("unhandledRejection", (reason) => cleanup("unhandledRejection", reason));
+
+mainInterval = setInterval(async () => {
     const response = await HEALTH_CHECK.queryEndpoint("/api/v1/game?q=1");
     if (response.success) {
         gamesWinning = response.data;

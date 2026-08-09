@@ -1,1 +1,104 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.LocalPublisherClass=void 0;class LocalPublisherClass{constructor(t){this._config=t,this.STATUS_TIMEOUT=5e3,this.tableStatus={general:!1,hardware:{status:!1,deltaTime:0},signboard:{status:!1,deltaTime:0},wheel:{status:!1,deltaTime:0},tableNumber:"0"},this.procMqtt=t=>{var e;const s=Array.isArray(t.topic)?t.topic:String(t.topic).split("/");if("sts"===s[0].toLowerCase())switch(s[1]){case"Hardware":this.updateDeviceStatus("hardware",t.payload);break;case"SignBoard":this.updateDeviceStatus("signboard",t.payload),(null===(e=JSON.parse(String(t.payload)))||void 0===e?void 0:e.tableNumber)&&(this.tableStatus.tableNumber=String(JSON.parse(String(t.payload)).tableNumber));break;case"wheel":this.updateDeviceStatus("wheel",t.payload)}},this.updateDeviceStatus=(t,e)=>{var s;try{const e=Date.now(),a=this.tableStatus[t],i=null!==(s=a.lastTime)&&void 0!==s?s:e;a.deltaTime=e-i,a.lastTime=e,a.status=!0,this.evaluateDeviceStatuses()}catch(t){console.warn("Payload no es JSON:",e,t)}},this.evaluateDeviceStatuses=()=>{const{hardware:t,signboard:e,wheel:s}=this.tableStatus;t.deltaTime>=this.STATUS_TIMEOUT&&(t.status=!1),e.deltaTime>=this.STATUS_TIMEOUT&&(e.status=!1),s.deltaTime>=this.STATUS_TIMEOUT&&(s.status=!1),this.tableStatus.general=!!(t.status&&e.status&&s.status)},this.publishMqtt=t=>{try{this._config.subject.tx$.next(t)}catch(t){console.error(t)}},this.start=()=>{console.info("Local Publisher Started")};const e={topic:"sts/#",qos:0};t.subject.subscribe$.next(e),t.subject.rx$.subscribe({next:t=>{try{this.procMqtt(t)}catch(t){console.error(t)}},error:t=>{console.error(t)}})}getTableStatus(){return this.evaluateDeviceStatuses(),this.tableStatus}}exports.LocalPublisherClass=LocalPublisherClass;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LocalPublisherClass = void 0;
+class LocalPublisherClass {
+    constructor(_config) {
+        this._config = _config;
+        this.STATUS_TIMEOUT = 5000;
+        this.tableStatus = {
+            general: false,
+            hardware: {
+                status: false,
+                deltaTime: 0,
+            },
+            signboard: {
+                status: false,
+                deltaTime: 0,
+            },
+            wheel: {
+                status: false,
+                deltaTime: 0,
+            },
+            tableNumber: "0",
+        };
+        this.procMqtt = (p_v) => {
+            var _a;
+            const topicSegments = Array.isArray(p_v.topic) ? p_v.topic : String(p_v.topic).split("/");
+            if (topicSegments[0].toLowerCase() === "sts") {
+                switch (topicSegments[1]) {
+                    case "Hardware":
+                        this.updateDeviceStatus("hardware", p_v.payload);
+                        break;
+                    case "SignBoard":
+                        this.updateDeviceStatus("signboard", p_v.payload);
+                        if ((_a = JSON.parse(String(p_v.payload))) === null || _a === void 0 ? void 0 : _a.tableNumber) {
+                            this.tableStatus.tableNumber = String(JSON.parse(String(p_v.payload)).tableNumber);
+                        }
+                        break;
+                    case "wheel":
+                        this.updateDeviceStatus("wheel", p_v.payload);
+                        break;
+                }
+            }
+        };
+        this.updateDeviceStatus = (device, payload) => {
+            var _a;
+            try {
+                const now = Date.now();
+                const deviceStatus = this.tableStatus[device];
+                const last = (_a = deviceStatus.lastTime) !== null && _a !== void 0 ? _a : now;
+                deviceStatus.deltaTime = now - last;
+                deviceStatus.lastTime = now;
+                deviceStatus.status = true;
+                this.evaluateDeviceStatuses();
+            }
+            catch (error) {
+                console.warn("Payload no es JSON:", payload, error);
+            }
+        };
+        this.evaluateDeviceStatuses = () => {
+            const { hardware, signboard, wheel } = this.tableStatus;
+            if (hardware.deltaTime >= this.STATUS_TIMEOUT)
+                hardware.status = false;
+            if (signboard.deltaTime >= this.STATUS_TIMEOUT)
+                signboard.status = false;
+            if (wheel.deltaTime >= this.STATUS_TIMEOUT)
+                wheel.status = false;
+            this.tableStatus.general = !!(hardware.status && signboard.status && wheel.status);
+        };
+        this.publishMqtt = (p_dataTx) => {
+            try {
+                this._config.subject.tx$.next(p_dataTx);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        };
+        this.start = () => {
+            console.info("Local Publisher Started");
+        };
+        const subsTopic = {
+            topic: `sts/#`,
+            qos: 0,
+        };
+        _config.subject.subscribe$.next(subsTopic);
+        _config.subject.rx$.subscribe({
+            next: (v) => {
+                try {
+                    this.procMqtt(v);
+                }
+                catch (error) {
+                    console.error(error);
+                }
+            },
+            error: (error) => {
+                console.error(error);
+            },
+        });
+    }
+    getTableStatus() {
+        this.evaluateDeviceStatuses();
+        return this.tableStatus;
+    }
+}
+exports.LocalPublisherClass = LocalPublisherClass;
