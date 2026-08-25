@@ -27,7 +27,9 @@
         "table:win": "set configFile=apps/sts/sts-table/NotSign/config/config_sts-table.yml && node ./apps/sts/sts-table/dist/index.js",
         "table:lnx": "configFile=./apps/sts/sts-table/NotSign/config/config_sts-table.yml node ./apps/sts/sts-table/dist/index.js",
         "local-publisher:win": "set configFile=apps/sts/sts-local-publisher/NotSign/config/config_sts-local-publisher.yml && node ./apps/sts/sts-local-publisher/dist/index.js",
-        "local-publisher:dev": "nodemon ./apps/sts/sts-local-publisher/src/index.ts --config ./__nodemon/nodemon.sts.local-publisher.json"
+        "local-publisher:dev": "nodemon ./apps/sts/sts-local-publisher/src/index.ts --config ./__nodemon/nodemon.sts.local-publisher.json",
+        "centralSala:dev": "npm run dev --workspace=supabase-client-ts",
+        "salaApp:dev": "npm run dev --workspace=sts-sala-app"
     },
     "workspaces": [
         "packages/**/*",
