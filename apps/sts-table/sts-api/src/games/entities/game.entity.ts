@@ -38,9 +38,9 @@ export class GameInterface {
 
     /**
      * The revolutions per minute.
-     * @type {number}
+     * @type {number | null}
      */
-    rpm: number;
+    rpm: number | null;
 
     /**
      * The clockwise rotation.

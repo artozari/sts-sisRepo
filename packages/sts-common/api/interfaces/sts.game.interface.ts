@@ -4,7 +4,7 @@ export interface StsGameInterface {
   updatedAt: Date;
   gameNumber: number;
   winNumber: number;
-  rpm: number;
+  rpm: number | null;
   clockwise: boolean;
   openTable: boolean;
   enabled: boolean;

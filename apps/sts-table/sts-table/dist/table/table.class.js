@@ -134,13 +134,71 @@ class TableClass {
                 // empty
             }
         };
+        this.normalizeWheelPayload = (raw) => {
+            const r = (raw ?? {});
+            const other = (r["other"] ?? {});
+            // state / timeState - soporta mayúsculas
+            const state = (r["state"] ?? r["State"] ?? sts_common_1.GralWheelStateEnum.OFF_LINE);
+            const timeState = Number(r["timeState"] ?? r["TimeState"] ?? 0) || 0;
+            // winningNumber - soporta WinningNumber y other.number ["30", conf]
+            let rawWin = r["winningNumber"] ?? r["WinningNumber"] ?? r["WINNING_NUMBER"] ?? r["winNumber"] ?? r["WinNumber"];
+            if (rawWin === undefined && other["number"] !== undefined) {
+                const n = other["number"];
+                if (Array.isArray(n))
+                    rawWin = n[0];
+                else
+                    rawWin = n;
+            }
+            let winningNumber = undefined;
+            if (rawWin !== undefined && rawWin !== null && rawWin !== "ND") {
+                const n = Number(rawWin);
+                winningNumber = Number.isNaN(n) ? undefined : n;
+            }
+            // clockWise - soporta ClockWise mayúscula y boolean
+            const rawCw = r["clockWise"] ?? r["ClockWise"] ?? r["clockwise"] ?? r["CLOCKWISE"];
+            let clockWise = undefined;
+            if (typeof rawCw === "string") {
+                const v = rawCw.toLowerCase();
+                if (v === "clockwise" || v === "true" || v === "1" || v === "cw")
+                    clockWise = sts_common_1.ClockWiseEnum.ClockWise;
+                else if (v === "anticlockwise" || v === "anti-clockwise" || v === "false" || v === "0" || v === "ccw" || v === "acw")
+                    clockWise = sts_common_1.ClockWiseEnum.AntiClockWise;
+                else if (v === "undefined" || v === "nd")
+                    clockWise = undefined;
+            }
+            else if (typeof rawCw === "boolean") {
+                clockWise = rawCw ? sts_common_1.ClockWiseEnum.ClockWise : sts_common_1.ClockWiseEnum.AntiClockWise;
+            }
+            else if (rawCw !== undefined && rawCw !== null) {
+                clockWise = rawCw;
+            }
+            // speed - usa Speed (mayúscula) como fuente principal, convierte rps -> rpm
+            const rawSpeed = r["speed"] ?? r["Speed"] ?? r["SPEED"] ?? r["rpm"] ?? r["Rpm"];
+            let speed = undefined;
+            if (rawSpeed !== undefined && rawSpeed !== null && rawSpeed !== "ND") {
+                const n = Number(rawSpeed);
+                if (!Number.isNaN(n)) {
+                    if (n > 0 && n < 5)
+                        speed = Math.round(n * 60); // rps ~0.28 -> 17 rpm
+                    else
+                        speed = Math.round(n);
+                }
+            }
+            return {
+                state,
+                timeState,
+                winningNumber,
+                clockWise,
+                speed,
+            };
+        };
         /**
          * Processes the new winning number.
          *
          * @param p_dataRx - The data received from the server.
          */
         this.procNewWinningNumber = (p_dataRx) => {
-            const rpm = p_dataRx.speed ?? 30;
+            const rpm = p_dataRx.speed ?? 0;
             const gameNumber = this._gameNumberEmitter !== undefined ? this._gameNumberEmitter + 1 : 1;
             if (p_dataRx.winningNumber === undefined) {
                 //empty
@@ -501,7 +559,8 @@ class TableClass {
                             this.processMqttHardwareRx(v, parts);
                         }
                         else if (parts[1] === "wheel" && parts[2] === _configInterface.wheelId && parts[3] === "state") {
-                            const state = JSON.parse(v.payload);
+                            const raw = JSON.parse(v.payload);
+                            const state = this.normalizeWheelPayload(raw);
                             this.procRxWheel(state, parts);
                         }
                         else if (parts[1] === "SignBoard" && parts[2] === "c") {

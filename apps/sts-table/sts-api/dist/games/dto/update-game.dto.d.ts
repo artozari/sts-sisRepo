@@ -3,7 +3,7 @@ type UpdateGameType = Omit<GamePartialType, 'id' | 'createdAt' | 'updatedAt' | '
 export declare class UpdateGameDto implements UpdateGameType {
     gameNumber: number;
     winNumber: number;
-    rpm: number;
+    rpm: number | null;
     clockwise: boolean;
     openTable: boolean;
     croupierId: number;

@@ -1,5 +1,5 @@
 
-import { IsBoolean, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsBoolean, IsInt, IsNumber, IsOptional, Max, Min } from 'class-validator';
 import { GamePartialType } from '../entities/game.entity';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -21,12 +21,12 @@ export class UpdateGameDto implements UpdateGameType {
     @Max(37)
     winNumber: number;
 
-    @ApiPropertyOptional({ type: Number, required: false, example: 1, description: 'Revolution per minute' })
+    @ApiPropertyOptional({ type: Number, required: false, nullable: true, example: 0.303, description: 'Revolution per minute (nullable)' })
     @IsOptional()
-    @IsInt()
+    @IsNumber()
     @Min(0)
-    @Max(50)
-    rpm: number;
+    @Max(100)
+    rpm: number | null;
 
     @ApiPropertyOptional({ type: Number, required: false, example: true, description: 'Clockwise direction' })
     @IsOptional()

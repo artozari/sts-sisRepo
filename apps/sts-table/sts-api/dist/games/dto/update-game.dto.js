@@ -15,7 +15,7 @@ const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 class UpdateGameDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { gameNumber: { required: true, type: () => Number, minimum: 0 }, winNumber: { required: true, type: () => Number, minimum: 0, maximum: 37 }, rpm: { required: true, type: () => Number, minimum: 0, maximum: 50 }, clockwise: { required: true, type: () => Boolean }, openTable: { required: true, type: () => Boolean }, croupierId: { required: true, type: () => Number, minimum: 1 }, tableId: { required: true, type: () => Number, minimum: 1 } };
+        return { gameNumber: { required: true, type: () => Number, minimum: 0 }, winNumber: { required: true, type: () => Number, minimum: 0, maximum: 37 }, rpm: { required: true, type: () => Number, nullable: true, minimum: 0, maximum: 100 }, clockwise: { required: true, type: () => Boolean }, openTable: { required: true, type: () => Boolean }, croupierId: { required: true, type: () => Number, minimum: 1 }, tableId: { required: true, type: () => Number, minimum: 1 } };
     }
 }
 exports.UpdateGameDto = UpdateGameDto;
@@ -35,11 +35,11 @@ __decorate([
     __metadata("design:type", Number)
 ], UpdateGameDto.prototype, "winNumber", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ type: Number, required: false, example: 1, description: 'Revolution per minute' }),
+    (0, swagger_1.ApiPropertyOptional)({ type: Number, required: false, nullable: true, example: 0.303, description: 'Revolution per minute (nullable)' }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.Min)(0),
-    (0, class_validator_1.Max)(50),
+    (0, class_validator_1.Max)(100),
     __metadata("design:type", Number)
 ], UpdateGameDto.prototype, "rpm", void 0);
 __decorate([

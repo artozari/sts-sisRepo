@@ -3,7 +3,7 @@ type CreateGameType = Omit<GameInterface, "id" | "createdAt" | "updatedAt" | "en
 export declare class CreateGameDto implements CreateGameType {
     gameNumber: number;
     winNumber: number;
-    rpm: number;
+    rpm: number | null;
     clockwise: boolean;
     openTable: boolean;
     croupierId: number;

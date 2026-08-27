@@ -4,7 +4,7 @@ export declare class GameInterface {
     updatedAt: Date;
     gameNumber: number;
     winNumber: number;
-    rpm: number;
+    rpm: number | null;
     clockwise: boolean;
     openTable: boolean;
     enabled: boolean;

@@ -143,7 +143,8 @@ export default class TableClass {
                             // process the hardware (MQTT)
                             this.processMqttHardwareRx(v, parts);
                         } else if (parts[1] === "wheel" && parts[2] === _configInterface.wheelId && parts[3] === "state") {
-                            const state: GralWheelStateInterface = <GralWheelStateInterface>JSON.parse(v.payload);
+                            const raw = JSON.parse(v.payload);
+                            const state: GralWheelStateInterface = this.normalizeWheelPayload(raw);
                             this.procRxWheel(state, parts);
                         } else if (parts[1] === "SignBoard" && parts[2] === "c") {
                             this.procRxSignBoard(parts, v.payload);
@@ -267,16 +268,71 @@ export default class TableClass {
         }
     };
 
+    private readonly normalizeWheelPayload = (raw: unknown): GralWheelStateInterface => {
+        const r = (raw ?? {}) as Record<string, unknown>;
+        const other = (r["other"] ?? {}) as Record<string, unknown>;
+
+        // state / timeState - soporta mayúsculas
+        const state = (r["state"] ?? r["State"] ?? GralWheelStateEnum.OFF_LINE) as GralWheelStateEnum;
+        const timeState = Number(r["timeState"] ?? r["TimeState"] ?? 0) || 0;
+
+        // winningNumber - soporta WinningNumber y other.number ["30", conf]
+        let rawWin: unknown = r["winningNumber"] ?? r["WinningNumber"] ?? r["WINNING_NUMBER"] ?? r["winNumber"] ?? r["WinNumber"];
+        if (rawWin === undefined && other["number"] !== undefined) {
+            const n = other["number"];
+            if (Array.isArray(n)) rawWin = n[0];
+            else rawWin = n;
+        }
+        let winningNumber: number | undefined = undefined;
+        if (rawWin !== undefined && rawWin !== null && rawWin !== "ND") {
+            const n = Number(rawWin);
+            winningNumber = Number.isNaN(n) ? undefined : n;
+        }
+
+        // clockWise - soporta ClockWise mayúscula y boolean
+        const rawCw: unknown = r["clockWise"] ?? r["ClockWise"] ?? r["clockwise"] ?? r["CLOCKWISE"];
+        let clockWise: ClockWiseEnum | undefined = undefined;
+        if (typeof rawCw === "string") {
+            const v = rawCw.toLowerCase();
+            if (v === "clockwise" || v === "true" || v === "1" || v === "cw") clockWise = ClockWiseEnum.ClockWise;
+            else if (v === "anticlockwise" || v === "anti-clockwise" || v === "false" || v === "0" || v === "ccw" || v === "acw") clockWise = ClockWiseEnum.AntiClockWise;
+            else if (v === "undefined" || v === "nd") clockWise = undefined;
+        } else if (typeof rawCw === "boolean") {
+            clockWise = rawCw ? ClockWiseEnum.ClockWise : ClockWiseEnum.AntiClockWise;
+        } else if (rawCw !== undefined && rawCw !== null) {
+            clockWise = rawCw as ClockWiseEnum;
+        }
+
+        // speed - usa Speed (mayúscula) como fuente principal, convierte rps -> rpm
+        const rawSpeed: unknown = r["speed"] ?? r["Speed"] ?? r["SPEED"] ?? r["rpm"] ?? r["Rpm"];
+        let speed: number | undefined = undefined;
+        if (rawSpeed !== undefined && rawSpeed !== null && rawSpeed !== "ND") {
+            const n = Number(rawSpeed);
+            if (!Number.isNaN(n)) {
+                if (n > 0 && n < 5) speed = Math.round(n * 60); // rps ~0.28 -> 17 rpm
+                else speed = Math.round(n);
+            }
+        }
+
+        return {
+            state,
+            timeState,
+            winningNumber,
+            clockWise,
+            speed,
+        } as GralWheelStateInterface;
+    };
+
     /**
      * Processes the new winning number.
      *
      * @param p_dataRx - The data received from the server.
      */
     private readonly procNewWinningNumber = (p_dataRx: GralWheelStateInterface): void => {
-        const rpm: number = p_dataRx.speed ?? 30;
+        const rpm: number = p_dataRx.speed ?? 0;
         const gameNumber: number = this._gameNumberEmitter !== undefined ? this._gameNumberEmitter + 1 : 1;
 
-        if (p_dataRx.winningNumber === undefined) {
+        if (p_dataRx.winningNumber === undefined) { 
             //empty
         } else {
             const tableIdEmitter: number = this._tableEmitter?.id ?? 0;
