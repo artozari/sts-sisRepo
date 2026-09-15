@@ -1,0 +1,31 @@
+{
+  "name": "sts-table",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test_co": "vitest --coverage",
+    "test_ui": "vitest --ui",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@slcn-pkg/communication-statistics-class": "^1.0.0",
+    "@slcn-pkg/config-class": "^1.0.1",
+    "@slcn-pkg/express-app-class": "^1.0.0",
+    "@slcn-pkg/http-client-class": "^1.0.0",
+    "@slcn-pkg/mqtt-client-class": "^1.0.0",
+    "@slcn-pkg/mqtt-client-observable-class": "^1.0.0",
+    "sts-common": "^1.0.0",
+    "@slcn-pkg/utility-libraries": "^1.0.0",
+    "class-validators": "^1.0.1",
+    "mersenne-twister": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/mersenne-twister": "^1.1.7"
+  }
+}
