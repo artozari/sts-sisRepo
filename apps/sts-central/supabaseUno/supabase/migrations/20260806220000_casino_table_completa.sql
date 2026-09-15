@@ -1,0 +1,18 @@
+-- Ampliar casino_table con los campos que utilizan la máquina y el central
+ALTER TABLE public.casino_table
+    ADD COLUMN IF NOT EXISTS casino_code TEXT,
+    ADD COLUMN IF NOT EXISTS name TEXT,
+    ADD COLUMN IF NOT EXISTS country TEXT,
+    ADD COLUMN IF NOT EXISTS province TEXT,
+    ADD COLUMN IF NOT EXISTS city TEXT,
+    ADD COLUMN IF NOT EXISTS address TEXT,
+    ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION,
+    ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION,
+    ADD COLUMN IF NOT EXISTS mqtt_url TEXT,
+    ADD COLUMN IF NOT EXISTS mqtt_port TEXT,
+    ADD COLUMN IF NOT EXISTS mqtt_protocol TEXT,
+    ADD COLUMN IF NOT EXISTS mqtt_tls BOOLEAN NOT NULL DEFAULT false,
+    ADD COLUMN IF NOT EXISTS mqtt_user TEXT,
+    ADD COLUMN IF NOT EXISTS mqtt_password TEXT,
+    ADD COLUMN IF NOT EXISTS mqtt_refresh_time_msec INTEGER NOT NULL DEFAULT 20,
+    ADD COLUMN IF NOT EXISTS cant_planos INTEGER NOT NULL DEFAULT 1;
