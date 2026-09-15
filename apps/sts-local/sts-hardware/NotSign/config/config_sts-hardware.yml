@@ -1,0 +1,19 @@
+HTTP:
+  PORT: "8022"
+  PORTS: "9022"
+COMM:
+  port: COM3
+  baudRate: 19200
+  dataBits: 8
+  stopBits: 1
+  parity: none
+  timeout: 1000
+LOGGER:
+  datePattern: YYYY-MM-DD
+  zippedArchive: true
+  maxSize: TenMb
+  maxFiles: FiftyFiles
+  level: info
+CONFIG_FILE:
+  general: apps/sts/NotSign/config/general.yml
+  secretKey: e5162121-9705-4ce0-b6eb-33748d58bfce
