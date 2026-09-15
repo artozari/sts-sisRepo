@@ -1,0 +1,3 @@
+//comando para conectarme de un puerto a otro desde mi compu al servidor con ssh, en este caso es el de supabase studio
+ssh -L 54323:127.0.0.1:54323 root@sts-santafe.sielcon.net
+

@@ -1,0 +1,26 @@
+* {
+  margin: 0;
+  padding: 0;
+  color: var(--text-color);
+}
+
+.chart-container {
+  height: 250px;
+  width: 250px;
+  justify-self: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.rose-container {
+  width: 250px;
+  height: 250px;
+}
+
+img {
+  width: 50%;
+  height: 50%;
+  rotate: -40deg;
+  object-fit: cover;
+}
