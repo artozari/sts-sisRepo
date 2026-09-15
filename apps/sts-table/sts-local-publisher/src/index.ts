@@ -170,7 +170,7 @@ mainInterval = setInterval(async () => {
 
     (async () => {
         if (CASINO_PUBLISHER.requestSync === 1) {
-            const response = await HEALTH_CHECK.queryEndpoint("/api/v1/game?q=2000"); //--> consulta para obtener los últimos 3000 juegos, luego se puede cambiar por la cantidad que se quiera, modificando la API
+            const response = await HEALTH_CHECK.queryEndpoint("/api/v1/game?q=10000"); //--> consulta para obtener los últimos 3000 juegos, luego se puede cambiar por la cantidad que se quiera, modificando la API
             if (response.success) {
                 gamesWinning = response.data; //--> invertimos el orden de los juegos para que el más reciente sea el primero en la lista
                 CASINO_PUBLISHER.publishMqtt({
