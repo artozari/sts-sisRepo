@@ -92,6 +92,7 @@ let casinoConf: string;
 let currentCasinoCode: string | null = null;
 let mainInterval: NodeJS.Timeout | null = null;
 let isShuttingDown = false;
+let isMainLoopRunning = false;
 
 const recreateCasinoMqttIfNeeded = (casinoRecord: any) => {
     try {
@@ -135,6 +136,13 @@ const recreateCasinoMqttIfNeeded = (casinoRecord: any) => {
         };
         MQTT_CASINO = new MqttClientClass(currentCasinoMqttConfig, null);
         MQTT_CASINO.start();
+        // El nuevo cliente debe re-suscribirse: Subject es sin replay y la suscripción original
+        // se emitió solo en el constructor de CasinoPublisherClass.
+        try {
+            CASINO_PUBLISHER.ensureGameSyncSubscriptions();
+        } catch (e) {
+            console.error("[MQTT Casino] Error re-suscribiendo GameSync:", e);
+        }
     } catch (e) {
         console.error("[MQTT Casino] Error al reconfigurar desde DB:", e);
     }
@@ -181,7 +189,13 @@ process.on("uncaughtException", (err) => cleanup("uncaughtException", err));
 process.on("unhandledRejection", (reason) => cleanup("unhandledRejection", reason));
 
 mainInterval = setInterval(async () => {
-    const response = await HEALTH_CHECK.queryEndpoint("/api/v1/game?q=1");
+    if (isMainLoopRunning) {
+        console.warn("[WARN] Ciclo principal solapado omitido (API lenta >3s). Evita 3/s y juegos duplicados.");
+        return;
+    }
+    isMainLoopRunning = true;
+    try {
+        const response = await HEALTH_CHECK.queryEndpoint("/api/v1/game?q=1");
     if (response.success) {
         gamesWinning = response.data;
     } else {
@@ -285,29 +299,96 @@ mainInterval = setInterval(async () => {
     });
 
     (async () => {
-        if (CASINO_PUBLISHER.requestSync === 1) {
-            const response = await HEALTH_CHECK.queryEndpoint("/api/v1/game?q=2000");
-            if (response.success) {
-                gamesWinning = response.data;
-                // Enriquecer cada juego con casinoCode si es array
-                let syncPayload = gamesWinning;
-                try {
-                    const games = JSON.parse(gamesWinning);
-                    if (Array.isArray(games)) {
-                        const enriched = games.map((g: any) => ({ ...g, casinoCode, tableNumber: Number(tableNumber) }));
-                        syncPayload = JSON.stringify(enriched);
+        const SYNC_BASE_Q = 2000;
+        const SYNC_MAX_Q = 10000;
+        const SYNC_CHUNK = 500;
+        const pending = CASINO_PUBLISHER.pendingSync;
+        if (!pending) {
+            if ((CASINO_PUBLISHER as any).requestSync === 1) {
+                // Solicitud legacy sin payload válido: no enviar nada por decisión explícita
+                console.warn("[GameSync] requestSync legacy sin last_game_registered: se ignora, no se envía nada.");
+                CASINO_PUBLISHER.clearSync();
+            }
+            return;
+        }
+        if (pending.tableNumber !== String(tableNumber)) {
+            console.warn(`[GameSync] Mesa solicitada ${pending.tableNumber} difiere de mesa local ${tableNumber}. Se responde con datos locales.`);
+        }
+        const from = pending.from;
+        try {
+            let response = await HEALTH_CHECK.queryEndpoint(`/api/v1/game?q=${SYNC_BASE_Q}`);
+            if (!response.success) {
+                console.error("[API Error] game sync", response.error);
+                return; // conservar pendingSync para reintentar en el próximo ciclo
+            }
+            let games: any[] = [];
+            try {
+                const parsed = JSON.parse(response.data);
+                if (Array.isArray(parsed)) games = parsed;
+            } catch {}
+            if (games.length === 0) {
+                console.warn(`[GameSync] Sin juegos en API local para mesa ${tableNumber}. Nada que enviar.`);
+                CASINO_PUBLISHER.clearSync();
+                return;
+            }
+            // Si el lote vino truncado (q completo) y el mínimo aún es mayor que from+1,
+            // re-pedir con un q mayor para cubrir todo el hueco (hasta SYNC_MAX_Q)
+            const minInBatch = Math.min(...games.map((g: any) => Number(g.gameNumber)).filter((n: number) => Number.isFinite(n)));
+            const maxLocal = Math.max(...games.map((g: any) => Number(g.gameNumber)).filter((n: number) => Number.isFinite(n)));
+            const need = Number.isFinite(maxLocal) ? maxLocal - from : 0;
+            if (need > games.length && games.length >= SYNC_BASE_Q && Number.isFinite(minInBatch) && minInBatch > from + 1) {
+                const biggerQ = Math.min(Math.max(need, SYNC_BASE_Q), SYNC_MAX_Q);
+                if (biggerQ > SYNC_BASE_Q) {
+                    console.log(`[GameSync] Hueco ${need} > lote base. Re-consultando con q=${biggerQ}.`);
+                    const response2 = await HEALTH_CHECK.queryEndpoint(`/api/v1/game?q=${biggerQ}`);
+                    if (response2.success) {
+                        try {
+                            const parsed2 = JSON.parse(response2.data);
+                            if (Array.isArray(parsed2) && parsed2.length > 0) {
+                                games = parsed2;
+                                gamesWinning = response2.data;
+                            }
+                        } catch {}
+                    } else {
+                        console.error("[API Error] game sync (ampliado)", response2.error);
                     }
-                } catch {}
+                }
+                if (need > SYNC_MAX_Q) {
+                    console.warn(`[GameSync] Faltan ${need} > max q=${SYNC_MAX_Q}. Se envían las ${SYNC_MAX_Q} más recientes en chunks; central re-pedirá el resto.`);
+                }
+            } else {
+                gamesWinning = response.data;
+            }
+            // Solo faltantes, orden asc: la que sigue a `from` primero
+            const missing = games
+                .filter((g: any) => Number.isFinite(Number(g?.gameNumber)) && Number(g.gameNumber) > from)
+                .sort((a: any, b: any) => Number(a.gameNumber) - Number(b.gameNumber));
+            if (missing.length === 0) {
+                console.log(`[GameSync] Sin faltantes: from=${from}, maxLocal=${Number.isFinite(maxLocal) ? maxLocal : "?"} . Nada que enviar.`);
+                CASINO_PUBLISHER.clearSync();
+                return;
+            }
+            const enrichedAll = missing.map((g: any) => ({ ...g, casinoCode, tableNumber: Number(tableNumber) }));
+            console.log(`[GameSync] Enviando ${enrichedAll.length} jugadas faltantes (from=${from}, ${enrichedAll[0].gameNumber}..${enrichedAll[enrichedAll.length - 1].gameNumber}) en chunks de ${SYNC_CHUNK}.`);
+            for (let i = 0; i < enrichedAll.length; i += SYNC_CHUNK) {
+                const chunk = enrichedAll.slice(i, i + SYNC_CHUNK);
                 CASINO_PUBLISHER.publishMqtt({
                     topic: `STS-MESAS/${casinoCode}/GameSync/${tableNumber}`,
-                    payload: syncPayload,
+                    payload: JSON.stringify(chunk),
                     qos: 1,
                     retain: false,
                 });
-            } else {
-                console.error("[API Error] game sync", response.error);
+                if (enrichedAll.length > SYNC_CHUNK) {
+                    console.log(`[GameSync] Chunk ${i / SYNC_CHUNK + 1}/${Math.ceil(enrichedAll.length / SYNC_CHUNK)}: ${chunk.length} jugadas (${chunk[0].gameNumber}..${chunk[chunk.length - 1].gameNumber}).`);
+                }
             }
-            CASINO_PUBLISHER.requestSync = 0;
+            CASINO_PUBLISHER.clearSync();
+        } catch (e) {
+            console.error("[GameSync] Error inesperado:", e);
+            // conservar pendingSync para reintentar
         }
     })();
+    } finally {
+        isMainLoopRunning = false;
+    }
 }, 3000);
