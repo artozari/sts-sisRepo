@@ -162,7 +162,7 @@ mainInterval = setInterval(() => __awaiter(void 0, void 0, void 0, function* () 
     });
     (() => __awaiter(void 0, void 0, void 0, function* () {
         if (CASINO_PUBLISHER.requestSync === 1) {
-            const response = yield HEALTH_CHECK.queryEndpoint("/api/v1/game?q=2000");
+            const response = yield HEALTH_CHECK.queryEndpoint("/api/v1/game?q=10000");
             if (response.success) {
                 gamesWinning = response.data;
                 CASINO_PUBLISHER.publishMqtt({

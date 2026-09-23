@@ -90,6 +90,7 @@ let casinoConf;
 let currentCasinoCode = null;
 let mainInterval = null;
 let isShuttingDown = false;
+let isMainLoopRunning = false;
 const recreateCasinoMqttIfNeeded = (casinoRecord) => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     try {
@@ -128,6 +129,12 @@ const recreateCasinoMqttIfNeeded = (casinoRecord) => {
         };
         MQTT_CASINO = new mqtt_client_class_1.MqttClientClass(currentCasinoMqttConfig, null);
         MQTT_CASINO.start();
+        try {
+            CASINO_PUBLISHER.ensureGameSyncSubscriptions();
+        }
+        catch (e) {
+            console.error("[MQTT Casino] Error re-suscribiendo GameSync:", e);
+        }
     }
     catch (e) {
         console.error("[MQTT Casino] Error al reconfigurar desde DB:", e);
@@ -171,128 +178,202 @@ process.on("uncaughtException", (err) => cleanup("uncaughtException", err));
 process.on("unhandledRejection", (reason) => cleanup("unhandledRejection", reason));
 mainInterval = setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
-    const response = yield HEALTH_CHECK.queryEndpoint("/api/v1/game?q=1");
-    if (response.success) {
-        gamesWinning = response.data;
+    if (isMainLoopRunning) {
+        console.warn("[WARN] Ciclo principal solapado omitido (API lenta >3s). Evita 3/s y juegos duplicados.");
+        return;
     }
-    else {
-        console.error("[API Error] game", response.error);
-    }
-    let firstGamePayload = gamesWinning;
+    isMainLoopRunning = true;
     try {
-        const games = JSON.parse(gamesWinning);
-        if (Array.isArray(games) && games.length > 0) {
-            firstGamePayload = JSON.stringify(games[0]);
+        const response = yield HEALTH_CHECK.queryEndpoint("/api/v1/game?q=1");
+        if (response.success) {
+            gamesWinning = response.data;
         }
-    }
-    catch (e) {
-        console.error(e);
-    }
-    const responseTable = yield HEALTH_CHECK.queryEndpoint("/api/v1/table/1");
-    if (responseTable.success) {
-        tableConf = responseTable.data;
-    }
-    else {
-        console.error("[API Error] table", responseTable.error);
-    }
-    let casinoCode = null;
-    let casinoRecord = null;
-    const responseCasino = yield HEALTH_CHECK.queryEndpoint("/api/v1/casino?q=1");
-    if (responseCasino.success) {
+        else {
+            console.error("[API Error] game", response.error);
+        }
+        let firstGamePayload = gamesWinning;
         try {
-            const parsed = JSON.parse(responseCasino.data);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                casinoRecord = parsed[0];
-                if (parsed.length > 1) {
-                    const sorted = [...parsed].sort((a, b) => { var _a, _b; return ((_a = b.id) !== null && _a !== void 0 ? _a : 0) - ((_b = a.id) !== null && _b !== void 0 ? _b : 0); });
-                    casinoRecord = sorted[0];
-                }
-            }
-            else if (parsed && typeof parsed === "object" && parsed.casinoCode) {
-                casinoRecord = parsed;
-            }
-            if (casinoRecord === null || casinoRecord === void 0 ? void 0 : casinoRecord.casinoCode) {
-                casinoCode = String(casinoRecord.casinoCode);
-                casinoConf = JSON.stringify(casinoRecord);
-                currentCasinoCode = casinoCode;
-                recreateCasinoMqttIfNeeded(casinoRecord);
-            }
-            else {
-                console.warn("\x1b[41m[WARN] Casino_table vacía o sin casinoCode — no se publicará a casino este ciclo. Cargar via POST /api/v1/casino\x1b[0m");
+            const games = JSON.parse(gamesWinning);
+            if (Array.isArray(games) && games.length > 0) {
+                firstGamePayload = JSON.stringify(games[0]);
             }
         }
         catch (e) {
-            console.error("[Casino Parse Error]", e, (_a = responseCasino.data) === null || _a === void 0 ? void 0 : _a.slice(0, 200));
+            console.error(e);
         }
-    }
-    else {
-        console.warn(`\x1b[41m[WARN] No se pudo obtener casino de DB local: ${responseCasino.error} — status ${responseCasino.statusCode}\x1b[0m`);
-        console.warn("Verificar que sts-api tenga al menos 1 fila en Casino_table (POST /api/v1/casino)");
-    }
-    tableStatus = LOCAL_PUBLISHER.getTableStatus();
-    if (!casinoCode) {
-        console.warn("[SKIP] Sin casinoCode no se publica a broker único (evita colisión). tableNumber:", tableStatus === null || tableStatus === void 0 ? void 0 : tableStatus.tableNumber);
-        return;
-    }
-    let tableNumber;
-    try {
-        tableNumber = String(JSON.parse(tableConf).tableNumber);
-    }
-    catch (_c) {
-        tableNumber = String((_b = tableStatus === null || tableStatus === void 0 ? void 0 : tableStatus.tableNumber) !== null && _b !== void 0 ? _b : "0");
-    }
-    let enrichedTableStatus;
-    try {
-        enrichedTableStatus = Object.assign(Object.assign({}, tableStatus), { casinoCode, tableNumber });
-    }
-    catch (_d) {
-        enrichedTableStatus = Object.assign({ casinoCode, tableNumber }, tableStatus);
-    }
-    let enrichedGamePayload;
-    try {
-        const gameObj = JSON.parse(firstGamePayload);
-        enrichedGamePayload = JSON.stringify(Object.assign(Object.assign({}, gameObj), { casinoCode, tableNumber: Number(tableNumber) }));
-    }
-    catch (_e) {
-        enrichedGamePayload = firstGamePayload;
-    }
-    CASINO_PUBLISHER.publishMqtt({
-        topic: `STS-MESAS/${casinoCode}/statusTableServices/${tableNumber}`,
-        payload: JSON.stringify(enrichedTableStatus),
-        qos: 1,
-        retain: false,
-    });
-    CASINO_PUBLISHER.publishMqtt({
-        topic: `STS-MESAS/${casinoCode}/game/${tableNumber}`,
-        payload: enrichedGamePayload,
-        qos: 1,
-        retain: false,
-    });
-    (() => __awaiter(void 0, void 0, void 0, function* () {
-        if (CASINO_PUBLISHER.requestSync === 1) {
-            const response = yield HEALTH_CHECK.queryEndpoint("/api/v1/game?q=2000");
-            if (response.success) {
-                gamesWinning = response.data;
-                let syncPayload = gamesWinning;
-                try {
-                    const games = JSON.parse(gamesWinning);
-                    if (Array.isArray(games)) {
-                        const enriched = games.map((g) => (Object.assign(Object.assign({}, g), { casinoCode, tableNumber: Number(tableNumber) })));
-                        syncPayload = JSON.stringify(enriched);
+        const responseTable = yield HEALTH_CHECK.queryEndpoint("/api/v1/table/1");
+        if (responseTable.success) {
+            tableConf = responseTable.data;
+        }
+        else {
+            console.error("[API Error] table", responseTable.error);
+        }
+        let casinoCode = null;
+        let casinoRecord = null;
+        const responseCasino = yield HEALTH_CHECK.queryEndpoint("/api/v1/casino?q=1");
+        if (responseCasino.success) {
+            try {
+                const parsed = JSON.parse(responseCasino.data);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    casinoRecord = parsed[0];
+                    if (parsed.length > 1) {
+                        const sorted = [...parsed].sort((a, b) => { var _a, _b; return ((_a = b.id) !== null && _a !== void 0 ? _a : 0) - ((_b = a.id) !== null && _b !== void 0 ? _b : 0); });
+                        casinoRecord = sorted[0];
                     }
                 }
-                catch (_a) { }
-                CASINO_PUBLISHER.publishMqtt({
-                    topic: `STS-MESAS/${casinoCode}/GameSync/${tableNumber}`,
-                    payload: syncPayload,
-                    qos: 1,
-                    retain: false,
-                });
+                else if (parsed && typeof parsed === "object" && parsed.casinoCode) {
+                    casinoRecord = parsed;
+                }
+                if (casinoRecord === null || casinoRecord === void 0 ? void 0 : casinoRecord.casinoCode) {
+                    casinoCode = String(casinoRecord.casinoCode);
+                    casinoConf = JSON.stringify(casinoRecord);
+                    currentCasinoCode = casinoCode;
+                    recreateCasinoMqttIfNeeded(casinoRecord);
+                }
+                else {
+                    console.warn("\x1b[41m[WARN] Casino_table vacía o sin casinoCode — no se publicará a casino este ciclo. Cargar via POST /api/v1/casino\x1b[0m");
+                }
             }
-            else {
-                console.error("[API Error] game sync", response.error);
+            catch (e) {
+                console.error("[Casino Parse Error]", e, (_a = responseCasino.data) === null || _a === void 0 ? void 0 : _a.slice(0, 200));
             }
-            CASINO_PUBLISHER.requestSync = 0;
         }
-    }))();
+        else {
+            console.warn(`\x1b[41m[WARN] No se pudo obtener casino de DB local: ${responseCasino.error} — status ${responseCasino.statusCode}\x1b[0m`);
+            console.warn("Verificar que sts-api tenga al menos 1 fila en Casino_table (POST /api/v1/casino)");
+        }
+        tableStatus = LOCAL_PUBLISHER.getTableStatus();
+        if (!casinoCode) {
+            console.warn("[SKIP] Sin casinoCode no se publica a broker único (evita colisión). tableNumber:", tableStatus === null || tableStatus === void 0 ? void 0 : tableStatus.tableNumber);
+            return;
+        }
+        let tableNumber;
+        try {
+            tableNumber = String(JSON.parse(tableConf).tableNumber);
+        }
+        catch (_c) {
+            tableNumber = String((_b = tableStatus === null || tableStatus === void 0 ? void 0 : tableStatus.tableNumber) !== null && _b !== void 0 ? _b : "0");
+        }
+        let enrichedTableStatus;
+        try {
+            enrichedTableStatus = Object.assign(Object.assign({}, tableStatus), { casinoCode, tableNumber });
+        }
+        catch (_d) {
+            enrichedTableStatus = Object.assign({ casinoCode, tableNumber }, tableStatus);
+        }
+        let enrichedGamePayload;
+        try {
+            const gameObj = JSON.parse(firstGamePayload);
+            enrichedGamePayload = JSON.stringify(Object.assign(Object.assign({}, gameObj), { casinoCode, tableNumber: Number(tableNumber) }));
+        }
+        catch (_e) {
+            enrichedGamePayload = firstGamePayload;
+        }
+        CASINO_PUBLISHER.publishMqtt({
+            topic: `STS-MESAS/${casinoCode}/statusTableServices/${tableNumber}`,
+            payload: JSON.stringify(enrichedTableStatus),
+            qos: 1,
+            retain: false,
+        });
+        CASINO_PUBLISHER.publishMqtt({
+            topic: `STS-MESAS/${casinoCode}/game/${tableNumber}`,
+            payload: enrichedGamePayload,
+            qos: 1,
+            retain: false,
+        });
+        (() => __awaiter(void 0, void 0, void 0, function* () {
+            const SYNC_BASE_Q = 2000;
+            const SYNC_MAX_Q = 10000;
+            const SYNC_CHUNK = 500;
+            const pending = CASINO_PUBLISHER.pendingSync;
+            if (!pending) {
+                if (CASINO_PUBLISHER.requestSync === 1) {
+                    console.warn("[GameSync] requestSync legacy sin last_game_registered: se ignora, no se envía nada.");
+                    CASINO_PUBLISHER.clearSync();
+                }
+                return;
+            }
+            if (pending.tableNumber !== String(tableNumber)) {
+                console.warn(`[GameSync] Mesa solicitada ${pending.tableNumber} difiere de mesa local ${tableNumber}. Se responde con datos locales.`);
+            }
+            const from = pending.from;
+            try {
+                let response = yield HEALTH_CHECK.queryEndpoint(`/api/v1/game?q=${SYNC_BASE_Q}`);
+                if (!response.success) {
+                    console.error("[API Error] game sync", response.error);
+                    return;
+                }
+                let games = [];
+                try {
+                    const parsed = JSON.parse(response.data);
+                    if (Array.isArray(parsed))
+                        games = parsed;
+                }
+                catch (_a) { }
+                if (games.length === 0) {
+                    console.warn(`[GameSync] Sin juegos en API local para mesa ${tableNumber}. Nada que enviar.`);
+                    CASINO_PUBLISHER.clearSync();
+                    return;
+                }
+                const minInBatch = Math.min(...games.map((g) => Number(g.gameNumber)).filter((n) => Number.isFinite(n)));
+                const maxLocal = Math.max(...games.map((g) => Number(g.gameNumber)).filter((n) => Number.isFinite(n)));
+                const need = Number.isFinite(maxLocal) ? maxLocal - from : 0;
+                if (need > games.length && games.length >= SYNC_BASE_Q && Number.isFinite(minInBatch) && minInBatch > from + 1) {
+                    const biggerQ = Math.min(Math.max(need, SYNC_BASE_Q), SYNC_MAX_Q);
+                    if (biggerQ > SYNC_BASE_Q) {
+                        console.log(`[GameSync] Hueco ${need} > lote base. Re-consultando con q=${biggerQ}.`);
+                        const response2 = yield HEALTH_CHECK.queryEndpoint(`/api/v1/game?q=${biggerQ}`);
+                        if (response2.success) {
+                            try {
+                                const parsed2 = JSON.parse(response2.data);
+                                if (Array.isArray(parsed2) && parsed2.length > 0) {
+                                    games = parsed2;
+                                    gamesWinning = response2.data;
+                                }
+                            }
+                            catch (_b) { }
+                        }
+                        else {
+                            console.error("[API Error] game sync (ampliado)", response2.error);
+                        }
+                    }
+                    if (need > SYNC_MAX_Q) {
+                        console.warn(`[GameSync] Faltan ${need} > max q=${SYNC_MAX_Q}. Se envían las ${SYNC_MAX_Q} más recientes en chunks; central re-pedirá el resto.`);
+                    }
+                }
+                else {
+                    gamesWinning = response.data;
+                }
+                const missing = games
+                    .filter((g) => Number.isFinite(Number(g === null || g === void 0 ? void 0 : g.gameNumber)) && Number(g.gameNumber) > from)
+                    .sort((a, b) => Number(a.gameNumber) - Number(b.gameNumber));
+                if (missing.length === 0) {
+                    console.log(`[GameSync] Sin faltantes: from=${from}, maxLocal=${Number.isFinite(maxLocal) ? maxLocal : "?"} . Nada que enviar.`);
+                    CASINO_PUBLISHER.clearSync();
+                    return;
+                }
+                const enrichedAll = missing.map((g) => (Object.assign(Object.assign({}, g), { casinoCode, tableNumber: Number(tableNumber) })));
+                console.log(`[GameSync] Enviando ${enrichedAll.length} jugadas faltantes (from=${from}, ${enrichedAll[0].gameNumber}..${enrichedAll[enrichedAll.length - 1].gameNumber}) en chunks de ${SYNC_CHUNK}.`);
+                for (let i = 0; i < enrichedAll.length; i += SYNC_CHUNK) {
+                    const chunk = enrichedAll.slice(i, i + SYNC_CHUNK);
+                    CASINO_PUBLISHER.publishMqtt({
+                        topic: `STS-MESAS/${casinoCode}/GameSync/${tableNumber}`,
+                        payload: JSON.stringify(chunk),
+                        qos: 1,
+                        retain: false,
+                    });
+                    if (enrichedAll.length > SYNC_CHUNK) {
+                        console.log(`[GameSync] Chunk ${i / SYNC_CHUNK + 1}/${Math.ceil(enrichedAll.length / SYNC_CHUNK)}: ${chunk.length} jugadas (${chunk[0].gameNumber}..${chunk[chunk.length - 1].gameNumber}).`);
+                    }
+                }
+                CASINO_PUBLISHER.clearSync();
+            }
+            catch (e) {
+                console.error("[GameSync] Error inesperado:", e);
+            }
+        }))();
+    }
+    finally {
+        isMainLoopRunning = false;
+    }
 }), 3000);

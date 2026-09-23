@@ -11,6 +11,6 @@
     "test_co": "vitest --coverage",
     "test_ui": "vitest --ui",
     "dev": "nodemon src/index.ts",
-    "build": "tsc"
+    "build": "echo skip build mqtt-client-observable-class: sin fuentes TS, se usa dist"
   }
 }

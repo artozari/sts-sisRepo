@@ -20,7 +20,7 @@
     "test_co": "vitest --coverage",
     "test_ui": "vitest --ui",
     "dev": "nodemon src/index.ts",
-    "build": "tsc"
+    "build": "echo skip build express-app-class: sin fuentes TS, se usa dist"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

@@ -6,7 +6,7 @@
 		"test_co": "vitest --coverage",
 		"test_ui": "vitest --ui",
 		"dev": "nodemon src/index.ts",
-		"build": "tsc"
+		"build": "echo skip build datetime-class: sin fuentes TS, se usa dist"
 	},
 	"dependencies": {
 		"luxon": "^3.4.4",

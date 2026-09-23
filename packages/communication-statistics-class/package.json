@@ -6,7 +6,7 @@
     "test_co": "vitest --coverage",
     "test_ui": "vitest --ui",
     "dev": "nodemon src/index.ts",
-    "build": "tsc"
+    "build": "echo skip build communication-statistics-class: sin fuentes TS, se usa dist"
   },
   "keywords": [],
   "author": "",

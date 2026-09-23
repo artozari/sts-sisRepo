@@ -12,6 +12,6 @@
     "test_co": "vitest --coverage",
     "test_ui": "vitest --ui",
     "dev": "nodemon src/index.ts",
-    "build": "tsc"
+    "build": "echo skip build http-response-class: sin fuentes TS, se usa dist"
   }
 }

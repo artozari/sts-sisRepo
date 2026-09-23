@@ -6,7 +6,7 @@
     "test_co": "vitest --coverage",
     "test_ui": "vitest --ui",
     "dev": "nodemon ./src/index.ts",
-    "build": "tsc --build",
+    "build": "echo skip build crypto-class: sin fuentes TS, se usa dist",
     "clean": "tsc --build --clean",
     "start": "node ./src/index.js"
   },

@@ -1,5 +1,5 @@
 {
-    "name": "supabase-client-ts",
+    "name": "stscentralsala",
     "version": "0.1.0",
     "description": "Cliente básico en TypeScript para conectar a Supabase",
     "main": "dist/mainService.js",
