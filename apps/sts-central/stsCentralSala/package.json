@@ -2,7 +2,7 @@
     "name": "supabase-client-ts",
     "version": "0.1.0",
     "description": "Cliente básico en TypeScript para conectar a Supabase",
-    "main": "dist/index.js",
+    "main": "dist/mainService.js",
     "scripts": {
         "build": "tsc",
         "typecheck": "tsc --noEmit",

@@ -53,6 +53,7 @@ Thumbs.db
 /test-results/
 
 # Otros artefactos
-.env.example  # opcionalmente puedes querer commitear .env.example; si NO, elimínalo de aquí
+# .env.example SI se commitea (plantilla sin secretos)
+!.env.example
 *.tgz
 *.zip
