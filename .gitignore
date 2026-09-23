@@ -7,3 +7,22 @@ node_modules
 .env.local
 .env.development
 .env.production
+!.env.example
+
+# Bases de datos locales / dumps
+*.db
+*.db-journal
+*.sqlite
+*.sqlite-journal
+dump.sql
+
+# Comprimidos
+*.7z
+
+# Logs
+*.log
+*.log.gz
+
+# Fotos / capturas accidentales
+IMG_*.jpg
+IMG_*.jpeg
