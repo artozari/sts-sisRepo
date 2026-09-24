@@ -1,0 +1,48 @@
+{
+  "name": "@slcn-app/mqtts-broker",
+  "version": "1.0.1",
+  "description": "",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test_co": "vitest --coverage",
+    "test_ui": "vitest --ui",
+    "dev": "nodemon src/index.ts --config nodemon.mqtts.broker.json",
+    "win": "set configFile=NotSign/config/config_mqtts-broker.yml && node ./dist/index.js",
+    "lnx": "configFile=./NotSign/config/config_mqtts-broker.yml node ./dist/index.js",
+    "srv:win": "npm install node-windows && node ./service-install-win.js",
+    "srv:lnx": "npm install node-linux && node ./service-install-lnx.js",
+    "srv-un:win": "node ./service-uninstall-win.js",
+    "srv-un:lnx": "node ./service-uninstall-lnx.js",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "pub": "npm publish"
+  },
+  "publishConfig": {
+    "registry": "http://dev01.sielcon.net:2001"
+  },
+  "keywords": [
+    "Sielcon",
+    "application",
+    "Typescript",
+    "mqtt broker"
+  ],
+  "author": "Ing. Hernan A. Picasso",
+  "license": "ISC",
+  "dependencies": {
+    "@slcn-pkg/config-class": "^1.0.1",
+    "@slcn-pkg/express-app-class": "1.0.0",
+    "@slcn-pkg/log-system-class": "^1.0.0",
+    "aedes": "^0.51.2",
+    "class-transformer": "^0.5.1",
+    "class-validators": "^1.0.1",
+    "node-linux": "^0.1.12",
+    "node-windows": "^1.0.0-beta.8",
+    "reflect-metadata": "^0.2.2",
+    "websocket-stream": "^5.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "nodemon": "^3.1.9",
+    "vitest": "^2.1.8"
+  }
+}

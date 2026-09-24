@@ -1,0 +1,29 @@
+{
+    "name": "mqtts-broker",
+    "version": "1.0.0",
+    "description": "",
+    "main": "./dist/index.js",
+    "scripts": {
+        "test_co": "vitest --coverage",
+        "test_ui": "vitest --ui",
+        "dev": "nodemon src/index.ts",
+        "build": "echo skip build mqtts-broker: sin fuentes TS, se usa dist",
+        "start": "node dist/index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "aedes": "^0.51.2",
+        "class-transformer": "^0.5.1",
+        "class-validators": "^1.0.1",
+        "@slcn-pkg/config-class": "^1.0.1",
+        "@slcn-pkg/log-system-class": "^1.0.0",
+        "@slcn-pkg/express-app-class": "^1.0.0",
+        "reflect-metadata": "^0.2.2",
+        "websocket-stream": "^5.5.2"
+    },
+    "devDependencies": {
+        "@types/node": "^20.14.7"
+    }
+}

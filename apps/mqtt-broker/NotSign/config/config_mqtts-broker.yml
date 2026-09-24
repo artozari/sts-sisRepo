@@ -1,0 +1,20 @@
+AEDES:
+  username: 5ed8a3d3c4ba224f5ae5f147591594f7|d8a720c99737
+  password: 61ee7f0c640b1de62a9679bc4a0786fc|99c0df8900f9590c
+  port: "19004"
+  portWs: "19104"
+  tls: false
+  clientPrefix: false
+LOGS:
+  console_type: small
+  max_files: 20
+  size: 200
+  level: trace
+HTTP:
+  PORT: "3020"
+  PORTS: "8020"
+CORS: []
+MAC_ID:
+  mac: 00:15:5d:15:64:04
+CONFIG_FILE:
+  secretKey: e6b94a17-45a8-40a6-8605-b40c37323579

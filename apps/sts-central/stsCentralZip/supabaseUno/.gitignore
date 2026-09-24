@@ -1,0 +1,9 @@
+/node_modules
+# Supabase local files
+supabase/.temp/
+supabase/.branches/
+
+# Environment variables
+.env
+.env.local
+*.env
